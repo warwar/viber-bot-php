@@ -1,5 +1,5 @@
 {
-    "name": "bogdaan/viber-bot-php",
+    "name": "warwar/viber-bot-php",
     "description": "Php bot interface to work with Viber API",
     "keywords": ["viber", "im", "bot"],
     "type": "library",
