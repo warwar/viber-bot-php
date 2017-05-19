@@ -53,20 +53,10 @@ class Bot
     }
 
     /**
-     * Get current bot client
-     *
-     * @return |Viber\Client
-     */
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    /**
      * Register event handler callback
      *
-     * @param \Closure  $checker checker function
-     * @param \Closure  $handler handler function
+     * @param \Closure $checker checker function
+     * @param \Closure $handler handler function
      *
      * @return \Viber\Bot
      */
@@ -79,7 +69,7 @@ class Bot
     /**
      * Register text message handler by PCRE
      *
-     * @param  string  $regexp  valid regular expression
+     * @param  string $regexp valid regular expression
      * @param  Closure $handler event handler
      * @return \Viber\Bot
      */
@@ -123,43 +113,6 @@ class Bot
     }
 
     /**
-     * Get signature header
-     *
-     * @throws \RuntimeException
-     * @return string
-     */
-    public function getSignHeaderValue()
-    {
-        $headerName = 'HTTP_X_VIBER_CONTENT_SIGNATURE';
-        if (!isset($_SERVER[$headerName])) {
-            throw new \RuntimeException($headerName.' header not found', 1);
-        }
-        return $_SERVER[$headerName];
-    }
-
-    /**
-     * Get bot input stream
-     *
-     * @return string
-     */
-    public function getInputBody()
-    {
-        return file_get_contents('php://input');
-    }
-
-    /**
-     * Response with entity
-     *
-     * @param  Entity $entity
-     * @return void
-     */
-    public function outputEntity(Entity $entity)
-    {
-        header('Content-Type: application/json');
-        echo json_encode($entity->toApiArray());
-    }
-
-    /**
      * Start bot process
      *
      * @throws \RuntimeException
@@ -175,7 +128,8 @@ class Bot
                 $this->getSignHeaderValue(),
                 $eventBody,
                 $this->getClient()->getToken()
-            )) {
+            )
+            ) {
                 throw new \RuntimeException('Invalid signature header', 2);
             }
             // check json
@@ -199,5 +153,55 @@ class Bot
             }
         }
         return $this;
+    }
+
+    /**
+     * Get bot input stream
+     *
+     * @return string
+     */
+    public function getInputBody()
+    {
+        return file_get_contents('php://input');
+    }
+
+    /**
+     * Get signature header
+     *
+     * @throws \RuntimeException
+     * @return string
+     */
+    public function getSignHeaderValue()
+    {
+        if (isset($_GET['sig']) && !empty($_GET['sig'])) {
+            return $_GET['sig'];
+        }
+        $headerName = 'HTTP_X_VIBER_CONTENT_SIGNATURE';
+        if (!isset($_SERVER[$headerName])) {
+            throw new \RuntimeException($headerName . ' header not found', 1);
+        }
+        return $_SERVER[$headerName];
+    }
+
+    /**
+     * Get current bot client
+     *
+     * @return |Viber\Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * Response with entity
+     *
+     * @param  Entity $entity
+     * @return void
+     */
+    public function outputEntity(Entity $entity)
+    {
+        header('Content-Type: application/json');
+        echo json_encode($entity->toApiArray());
     }
 }
